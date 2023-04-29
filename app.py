@@ -10,11 +10,12 @@ openai.api_key = os.getenv("OPENAI_API_KEY")
 @app.route("/", methods=("GET", "POST"))
 def index():
     if request.method == "POST":
-        animal = request.form["animal"]
+        episode = request.form["episodio"]
         response = openai.Completion.create(
             model="text-davinci-003",
-            prompt=generate_prompt(animal),
+            prompt=generate_prompt(episode),
             temperature=0.6,
+            max_tokens=2500
         )
         return redirect(url_for("index", result=response.choices[0].text))
 
@@ -22,14 +23,5 @@ def index():
     return render_template("index.html", result=result)
 
 
-def generate_prompt(animal):
-    return """Suggest three names for an animal that is a superhero.
-
-Animal: Cat
-Names: Captain Sharpclaw, Agent Fluffball, The Incredible Feline
-Animal: Dog
-Names: Ruff the Protector, Wonder Canine, Sir Barks-a-Lot
-Animal: {}
-Names:""".format(
-        animal.capitalize()
-    )
+def generate_prompt(episode):
+    return f"Summarize the episode '{episode}' of the podcast 'Mi Mejor Versión con Isa Garcia' in Spanish. Then list the key sections of the podcast. Each section should include the minute and second that they start. List each section in a newline."
